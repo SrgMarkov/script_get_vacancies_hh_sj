@@ -21,4 +21,15 @@ pip install -r requirements.txt
 python3 main.py
 ```
 программа выведет в консоли 2 таблицы:
+<img width="691" alt="Screenshot 2023-07-13 at 14 44 06" src="https://github.com/SrgMarkov/vacancies_for_programmers/assets/107784915/e82e187c-275b-49ff-b78e-f1a507fbe78d">
+
+В кажой из строк которой указан язык программирования, всего найденных вакансий, количество обработанных вакансий (те у которых указана зарплата в рублях) и среднее значение оплаты труда 
+
+### Основные функции
+-`predict_rub_salary_hh` - подсчет зарплаты по вакансии с hh.ru. Если зарплата не указана или указана не в рублях - возвращает Null
+-`predict_rub_salary_sj` - то же что и предидущая для Superjob
+-`get_vacancies_from_hh` - Возвращает словарь со значениями по каждому языку программирования из списка `PROGRAM_LANGUAGES` для hh.ru
+-`get_vacancies_from_sj` - то же что и предидущая для Superjob
+-`create_table` - создает таблицу с полями из списка `TABLE_HEADING` и наполняет данными
+
 
