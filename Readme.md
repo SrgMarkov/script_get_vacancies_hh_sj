@@ -21,7 +21,8 @@ pip install -r requirements.txt
 python3 main.py
 ```
 программа выведет в консоли 2 таблицы:
-<img width="691" alt="Screenshot 2023-07-13 at 14 44 06" src="https://github.com/SrgMarkov/vacancies_for_programmers/assets/107784915/e82e187c-275b-49ff-b78e-f1a507fbe78d">
+<img width="691" alt="Screenshot 2023-07-13 at 14 44 06" src="https://github.com/SrgMarkov/vacancies_for_programmers/assets/107784915/187fd17f-1984-4a4b-922f-3da82168cccb">
+
 
 В кажой из строк которой указан язык программирования, всего найденных вакансий, количество обработанных вакансий (те у которых указана зарплата в рублях) и среднее значение оплаты труда 
 
