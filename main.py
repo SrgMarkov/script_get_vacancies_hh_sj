@@ -93,15 +93,15 @@ def get_vacancies_from_sj():
 
 
 def create_table(vacancies, table_name):
-    hh_table_data = [
+    table = [
         TABLE_HEADING,
     ]
     for program_language in vacancies:
-        hh_table_row = [program_language, vacancies[program_language]['vacancies_found'],
-                        vacancies[program_language]['vacancies_processed'],
-                        vacancies[program_language]['average_salary']]
-        hh_table_data.append(hh_table_row)
-    return AsciiTable(hh_table_data, table_name)
+        table_row = [program_language, vacancies[program_language]['vacancies_found'],
+                     vacancies[program_language]['vacancies_processed'],
+                     vacancies[program_language]['average_salary']]
+        tableappend(table_row)
+    return AsciiTable(table, table_name)
 
 
 if __name__ == '__main__':
