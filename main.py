@@ -4,6 +4,7 @@ import requests
 from dotenv import load_dotenv
 from terminaltables import AsciiTable
 
+
 PROGRAM_LANGUAGES = ['JavaScript', 'Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'Swift', 'Go']
 TABLE_HEADING = ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата']
 LOCATION_FOR_HH = '1'
@@ -15,13 +16,13 @@ VACANCY_DATE_FROM = date.today() - timedelta(days=30)
 
 def predict_rub_salary_hh(hh_vacancy):
     salary = hh_vacancy['salary']
-    if salary is None:
+    if not salary:
         return None
     elif salary['currency'] != 'RUR':
         return None
-    elif salary['from'] is None:
+    elif not salary['from']:
         return salary['to'] * 0.8
-    elif salary['to'] is None:
+    elif not salary['to']:
         return salary['from'] * 1.2
     else:
         return (salary['to'] + salary['from']) / 2
@@ -48,22 +49,22 @@ def get_vacancies_stats_from_hh():
                   'page': START_PAGE,
                   'date_from': VACANCY_DATE_FROM}
         vacancy_pages = None
+        vacancy_attribute = None
         vacancy_with_salaries = 0
         vacancy_salaries_sum = 0
-        vacancy_attribute = {}
         while params['page'] != vacancy_pages:
             vacancy = requests.get(hh_url, params=params)
             vacancy.raise_for_status()
-            vacancy_pages = vacancy.json()['pages']
-            vacancy_attribute['vacancies_found'] = vacancy.json()['found']
-            vacancies_on_page = vacancy.json()['items']
-            for vacancy in vacancies_on_page:
-                if predict_rub_salary_hh(vacancy) is not None:
+            vacancy_response = vacancy.json()
+            vacancy_pages = vacancy_response['pages']
+            for vacancy in vacancy_response['items']:
+                if predict_rub_salary_hh(vacancy):
                     vacancy_with_salaries += 1
                     vacancy_salaries_sum += predict_rub_salary_hh(vacancy)
+            vacancy_attribute = {'vacancies_found': vacancy_response['found'],
+                                 'vacancies_processed': vacancy_with_salaries,
+                                 'average_salary': int(vacancy_salaries_sum / vacancy_with_salaries)}
             params['page'] += 1
-        vacancy_attribute['vacancies_processed'] = vacancy_with_salaries
-        vacancy_attribute['average_salary'] = int(vacancy_salaries_sum / vacancy_with_salaries)
         hh_vacancies_stats[program_language] = vacancy_attribute
     return hh_vacancies_stats
 
@@ -79,18 +80,17 @@ def get_vacancies_stats_from_sj(api_key):
                            }
         vacancy_with_salaries = 0
         vacancy_salaries_sum = 0
-        vacancy_attribute = {}
         while True:
             superjob_response = requests.get(superjob_url, headers=api_key, params=superjob_params)
             superjob_response.raise_for_status()
-            vacancy_attribute['vacancies_found'] = superjob_response.json()['total']
             vacancies_on_page_json = superjob_response.json()
             for vacancy in vacancies_on_page_json['objects']:
-                if predict_rub_salary_sj(vacancy) is not None:
+                if predict_rub_salary_sj(vacancy):
                     vacancy_with_salaries += 1
                     vacancy_salaries_sum += predict_rub_salary_sj(vacancy)
-            vacancy_attribute['vacancies_processed'] = vacancy_with_salaries
-            vacancy_attribute['average_salary'] = int(vacancy_salaries_sum / vacancy_with_salaries)
+            vacancy_attribute = {'vacancies_found': superjob_response.json()['total'],
+                                 'vacancies_processed': vacancy_with_salaries,
+                                 'average_salary': int(vacancy_salaries_sum / vacancy_with_salaries)}
             if not vacancies_on_page_json['more']:
                 break
             superjob_params['page'] += 1
