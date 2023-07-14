@@ -84,14 +84,14 @@ def get_vacancies_stats_from_sj(api_key):
             superjob_response = requests.get(superjob_url, headers=api_key, params=superjob_params)
             superjob_response.raise_for_status()
             vacancy_attribute['vacancies_found'] = superjob_response.json()['total']
-            vacancies_on_page = superjob_response.json()['objects']
-            for vacancy in vacancies_on_page:
+            vacancies_on_page_json = superjob_response.json()
+            for vacancy in vacancies_on_page_json['objects']:
                 if predict_rub_salary_sj(vacancy) is not None:
                     vacancy_with_salaries += 1
                     vacancy_salaries_sum += predict_rub_salary_sj(vacancy)
             vacancy_attribute['vacancies_processed'] = vacancy_with_salaries
             vacancy_attribute['average_salary'] = int(vacancy_salaries_sum / vacancy_with_salaries)
-            if not superjob_response.json()['more']:
+            if not vacancies_on_page_json['more']:
                 break
             superjob_params['page'] += 1
         sj_vacancies_stats[program_language] = vacancy_attribute
