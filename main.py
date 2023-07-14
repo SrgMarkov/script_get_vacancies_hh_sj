@@ -62,10 +62,9 @@ def get_vacancies_stats_from_hh():
     return hh_vacancies_stats
 
 
-def get_vacancies_stats_from_sj():
+def get_vacancies_stats_from_sj(api_key):
     sj_vacancies_stats = {}
     for program_language in PROGRAM_LANGUAGES:
-        superjob_auth = {'X-Api-App-Id': f'{os.getenv("SUPERJOB_TOKEN")}'}
         superjob_url = 'https://api.superjob.ru/2.0/vacancies/'
         superjob_params = {'keyword': program_language,
                            'town': 4,
@@ -76,7 +75,7 @@ def get_vacancies_stats_from_sj():
         vacancy_salaries_sum = 0
         vacancy_attribute = {}
         while True:
-            superjob_response = requests.get(superjob_url, headers=superjob_auth, params=superjob_params)
+            superjob_response = requests.get(superjob_url, headers=api_key, params=superjob_params)
             superjob_response.raise_for_status()
             vacancy_attribute['vacancies_found'] = superjob_response.json()['total']
             for vacancy in superjob_response.json()['objects']:
@@ -100,13 +99,14 @@ def create_table(vacancies, table_name):
         table_row = [program_language, vacancies[program_language]['vacancies_found'],
                      vacancies[program_language]['vacancies_processed'],
                      vacancies[program_language]['average_salary']]
-        tableappend(table_row)
+        table.append(table_row)
     return AsciiTable(table, table_name)
 
 
 if __name__ == '__main__':
     load_dotenv()
-    hh_vacancies_table = create_table(get_vacancies_from_hh(), 'HH Moscow')
-    sj_vacancies_table = create_table(get_vacancies_from_sj(), 'SuperJob Moscow')
+    superjob_auth = {'X-Api-App-Id': f'{os.getenv("SUPERJOB_TOKEN")}'}
+    hh_vacancies_table = create_table(get_vacancies_stats_from_hh(), 'HH Moscow')
+    sj_vacancies_table = create_table(get_vacancies_stats_from_sj(superjob_auth), 'SuperJob Moscow')
     print(hh_vacancies_table.table)
     print(sj_vacancies_table.table)
