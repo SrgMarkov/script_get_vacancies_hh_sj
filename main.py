@@ -56,7 +56,8 @@ def get_vacancies_stats_from_hh():
             vacancy.raise_for_status()
             vacancy_pages = vacancy.json()['pages']
             vacancy_attribute['vacancies_found'] = vacancy.json()['found']
-            for vacancy in vacancy.json()['items']:
+            vacancies_on_page = vacancy.json()['items']
+            for vacancy in vacancies_on_page:
                 if predict_rub_salary_hh(vacancy) is not None:
                     vacancy_with_salaries += 1
                     vacancy_salaries_sum += predict_rub_salary_hh(vacancy)
@@ -83,7 +84,8 @@ def get_vacancies_stats_from_sj(api_key):
             superjob_response = requests.get(superjob_url, headers=api_key, params=superjob_params)
             superjob_response.raise_for_status()
             vacancy_attribute['vacancies_found'] = superjob_response.json()['total']
-            for vacancy in superjob_response.json()['objects']:
+            vacancies_on_page = superjob_response.json()['objects']
+            for vacancy in vacancies_on_page:
                 if predict_rub_salary_sj(vacancy) is not None:
                     vacancy_with_salaries += 1
                     vacancy_salaries_sum += predict_rub_salary_sj(vacancy)
