@@ -16,27 +16,26 @@ VACANCY_DATE_FROM = date.today() - timedelta(days=30)
 
 def predict_rub_salary_hh(hh_vacancy):
     salary = hh_vacancy['salary']
-    if not salary:
+    if not salary or salary['currency'] != 'RUR':
         return None
-    elif salary['currency'] != 'RUR':
-        return None
-    elif not salary['from']:
-        return salary['to'] * 0.8
-    elif not salary['to']:
-        return salary['from'] * 1.2
     else:
-        return (salary['to'] + salary['from']) / 2
+        return get_average_value(salary['to'], salary['from'])
 
 
 def predict_rub_salary_sj(sj_vacancy):
     if sj_vacancy['currency'] != 'rub' or (sj_vacancy['payment_from'] == 0 and sj_vacancy['payment_to'] == 0):
         return None
-    elif sj_vacancy['payment_from'] == 0:
-        return sj_vacancy['payment_to'] * 0.8
-    elif sj_vacancy['payment_to'] == 0:
-        return sj_vacancy['payment_from'] * 1.2
     else:
-        return (sj_vacancy['payment_from'] + sj_vacancy['payment_to']) / 2
+        return get_average_value(sj_vacancy['payment_from'], sj_vacancy['payment_to'])
+
+
+def get_average_value(min_value, max_value):
+    if not max_value or max_value == 0:
+        return min_value * 1.2
+    elif not min_value or min_value == 0:
+        return max_value * 0.8
+    else:
+        return (min_value + max_value) / 2
 
 
 def get_vacancies_stats_from_hh():
