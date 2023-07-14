@@ -115,7 +115,9 @@ def create_table(vacancies, table_name):
 if __name__ == '__main__':
     load_dotenv()
     superjob_auth = {'X-Api-App-Id': f'{os.getenv("SUPERJOB_TOKEN")}'}
-    hh_vacancies_table = create_table(get_vacancies_stats_from_hh(), 'HH Moscow')
-    sj_vacancies_table = create_table(get_vacancies_stats_from_sj(superjob_auth), 'SuperJob Moscow')
+    hh_vacancies = get_vacancies_stats_from_hh()
+    sj_vacancies = get_vacancies_stats_from_sj(superjob_auth)
+    hh_vacancies_table = create_table(hh_vacancies, 'HH Moscow')
+    sj_vacancies_table = create_table(sj_vacancies, 'SuperJob Moscow')
     print(hh_vacancies_table.table)
     print(sj_vacancies_table.table)
