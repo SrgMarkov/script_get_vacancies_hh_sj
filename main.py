@@ -53,16 +53,16 @@ def get_vacancies_stats_from_hh():
         while params['page'] != vacancy_pages_count:
             hh_response = requests.get(hh_url, params=params)
             hh_response.raise_for_status()
-            vacancies_on_page = hh_response.json()
-            vacancy_pages_count = vacancies_on_page['pages']
-            for vacancy in vacancies_on_page['items']:
+            vacancies_on_page_json = hh_response.json()
+            vacancy_pages_count = vacancies_on_page_json['pages']
+            for vacancy in vacancies_on_page_json['items']:
                 vacancy_salary = predict_rub_salary_hh(vacancy)
                 if vacancy_salary:
                     vacancy_with_salaries += 1
                     vacancy_salaries_sum += vacancy_salary
             params['page'] += 1
         average_salary = int(vacancy_salaries_sum / vacancy_with_salaries) if vacancy_with_salaries else 0
-        vacancy_attribute = {'vacancies_found': vacancies_on_page['found'],
+        vacancy_attribute = {'vacancies_found': vacancies_on_page_json['found'],
                              'vacancies_processed': vacancy_with_salaries,
                              'average_salary': average_salary}
         hh_vacancies_stats[program_language] = vacancy_attribute
@@ -83,17 +83,17 @@ def get_vacancies_stats_from_sj(api_key):
         while True:
             superjob_response = requests.get(superjob_url, headers=api_key, params=superjob_params)
             superjob_response.raise_for_status()
-            vacancies_on_page = superjob_response.json()
-            for vacancy in vacancies_on_page['objects']:
+            vacancies_on_page_json = superjob_response.json()
+            for vacancy in vacancies_on_page_json['objects']:
                 vacancy_salary = predict_rub_salary_sj(vacancy)
                 if vacancy_salary:
                     vacancy_with_salaries += 1
                     vacancy_salaries_sum += vacancy_salary
-            if not vacancies_on_page['more']:
+            if not vacancies_on_page_json['more']:
                 break
             superjob_params['page'] += 1
         average_salary = int(vacancy_salaries_sum / vacancy_with_salaries) if vacancy_with_salaries else 0
-        vacancy_attribute = {'vacancies_found': vacancies_on_page['total'],
+        vacancy_attribute = {'vacancies_found': vacancies_on_page_json['total'],
                              'vacancies_processed': vacancy_with_salaries,
                              'average_salary': average_salary}
         sj_vacancies_stats[program_language] = vacancy_attribute
