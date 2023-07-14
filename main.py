@@ -33,7 +33,7 @@ def predict_rub_salary_sj(sj_vacancy):
         return (sj_vacancy['payment_from'] + sj_vacancy['payment_to']) / 2
 
 
-def get_vacancies_from_hh():
+def get_vacancies_stats_from_hh():
     hh_url = 'https://api.hh.ru/vacancies'
     hh_vacancies_stats = {}
     for program_language in PROGRAM_LANGUAGES:
@@ -62,7 +62,7 @@ def get_vacancies_from_hh():
     return hh_vacancies_stats
 
 
-def get_vacancies_from_sj():
+def get_vacancies_stats_from_sj():
     sj_vacancies_stats = {}
     for program_language in PROGRAM_LANGUAGES:
         superjob_auth = {'X-Api-App-Id': f'{os.getenv("SUPERJOB_TOKEN")}'}
