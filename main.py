@@ -61,9 +61,10 @@ def get_vacancies_stats_from_hh():
                 if vacancy_salary:
                     vacancy_with_salaries += 1
                     vacancy_salaries_sum += vacancy_salary
-            vacancy_attribute = {'vacancies_found': vacancy_response['found'],
-                                 'vacancies_processed': vacancy_with_salaries,
-                                 'average_salary': int(vacancy_salaries_sum / vacancy_with_salaries)}
+            if vacancy_with_salaries != 0:
+                vacancy_attribute = {'vacancies_found': vacancy_response['found'],
+                                     'vacancies_processed': vacancy_with_salaries,
+                                     'average_salary': int(vacancy_salaries_sum / vacancy_with_salaries)}
             params['page'] += 1
         hh_vacancies_stats[program_language] = vacancy_attribute
     return hh_vacancies_stats
@@ -89,9 +90,10 @@ def get_vacancies_stats_from_sj(api_key):
                 if vacancy_salary:
                     vacancy_with_salaries += 1
                     vacancy_salaries_sum += vacancy_salary
-            vacancy_attribute = {'vacancies_found': superjob_response.json()['total'],
-                                 'vacancies_processed': vacancy_with_salaries,
-                                 'average_salary': int(vacancy_salaries_sum / vacancy_with_salaries)}
+            if vacancy_with_salaries != 0:
+                vacancy_attribute = {'vacancies_found': superjob_response.json()['total'],
+                                     'vacancies_processed': vacancy_with_salaries,
+                                     'average_salary': int(vacancy_salaries_sum / vacancy_with_salaries)}
             if not vacancies_on_page_json['more']:
                 break
             superjob_params['page'] += 1
