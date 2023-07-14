@@ -35,7 +35,7 @@ def predict_rub_salary_sj(sj_vacancy):
 
 def get_vacancies_from_hh():
     hh_url = 'https://api.hh.ru/vacancies'
-    hh_vacancies = {}
+    hh_vacancies_stats = {}
     for program_language in PROGRAM_LANGUAGES:
         params = {'text': program_language,
                   'area': '1',
@@ -58,12 +58,12 @@ def get_vacancies_from_hh():
             params['page'] += 1
         vacancy_attribute['vacancies_processed'] = vacancy_with_salaries
         vacancy_attribute['average_salary'] = int(vacancy_salaries_sum / vacancy_with_salaries)
-        hh_vacancies[program_language] = vacancy_attribute
-    return hh_vacancies
+        hh_vacancies_stats[program_language] = vacancy_attribute
+    return hh_vacancies_stats
 
 
 def get_vacancies_from_sj():
-    sj_vacancies = {}
+    sj_vacancies_stats = {}
     for program_language in PROGRAM_LANGUAGES:
         superjob_auth = {'X-Api-App-Id': f'{os.getenv("SUPERJOB_TOKEN")}'}
         superjob_url = 'https://api.superjob.ru/2.0/vacancies/'
@@ -88,8 +88,8 @@ def get_vacancies_from_sj():
             if not superjob_response.json()['more']:
                 break
             superjob_params['page'] += 1
-        sj_vacancies[program_language] = vacancy_attribute
-    return sj_vacancies
+        sj_vacancies_stats[program_language] = vacancy_attribute
+    return sj_vacancies_stats
 
 
 def create_table(vacancies, table_name):
