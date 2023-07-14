@@ -23,16 +23,16 @@ def predict_rub_salary_hh(hh_vacancy):
 
 
 def predict_rub_salary_sj(sj_vacancy):
-    if sj_vacancy['currency'] != 'rub' or (sj_vacancy['payment_from'] == 0 and sj_vacancy['payment_to'] == 0):
+    if sj_vacancy['currency'] != 'rub' or (not sj_vacancy['payment_from'] and not sj_vacancy['payment_to']):
         return None
     else:
         return get_average_value(sj_vacancy['payment_from'], sj_vacancy['payment_to'])
 
 
 def get_average_value(min_value, max_value):
-    if not max_value or max_value == 0:
+    if not max_value:
         return min_value * 1.2
-    elif not min_value or min_value == 0:
+    elif not min_value:
         return max_value * 0.8
     else:
         return (min_value + max_value) / 2
@@ -48,7 +48,6 @@ def get_vacancies_stats_from_hh():
                   'page': START_PAGE,
                   'date_from': VACANCY_DATE_FROM}
         vacancy_pages = None
-        vacancy_attribute = None
         vacancy_with_salaries = 0
         vacancy_salaries_sum = 0
         while params['page'] != vacancy_pages:
@@ -61,10 +60,10 @@ def get_vacancies_stats_from_hh():
                 if vacancy_salary:
                     vacancy_with_salaries += 1
                     vacancy_salaries_sum += vacancy_salary
-            if vacancy_with_salaries != 0:
-                vacancy_attribute = {'vacancies_found': vacancy_response['found'],
-                                     'vacancies_processed': vacancy_with_salaries,
-                                     'average_salary': int(vacancy_salaries_sum / vacancy_with_salaries)}
+            average_salary = int(vacancy_salaries_sum / vacancy_with_salaries) if vacancy_with_salaries else 0
+            vacancy_attribute = {'vacancies_found': vacancy_response['found'],
+                                 'vacancies_processed': vacancy_with_salaries,
+                                 'average_salary': average_salary}
             params['page'] += 1
         hh_vacancies_stats[program_language] = vacancy_attribute
     return hh_vacancies_stats
@@ -90,10 +89,10 @@ def get_vacancies_stats_from_sj(api_key):
                 if vacancy_salary:
                     vacancy_with_salaries += 1
                     vacancy_salaries_sum += vacancy_salary
-            if vacancy_with_salaries != 0:
-                vacancy_attribute = {'vacancies_found': superjob_response.json()['total'],
-                                     'vacancies_processed': vacancy_with_salaries,
-                                     'average_salary': int(vacancy_salaries_sum / vacancy_with_salaries)}
+            average_salary = int(vacancy_salaries_sum / vacancy_with_salaries) if vacancy_with_salaries else 0
+            vacancy_attribute = {'vacancies_found': superjob_response.json()['total'],
+                                 'vacancies_processed': vacancy_with_salaries,
+                                 'average_salary': average_salary}
             if not vacancies_on_page_json['more']:
                 break
             superjob_params['page'] += 1
@@ -116,7 +115,7 @@ def create_table(vacancies, table_name):
 if __name__ == '__main__':
     load_dotenv()
     superjob_auth = {'X-Api-App-Id': f'{os.getenv("SUPERJOB_TOKEN")}'}
-    hh_vacancies_table = create_table(get_vacancies_stats_from_hh(), 'HH Moscow')
+    # hh_vacancies_table = create_table(get_vacancies_stats_from_hh(), 'HH Moscow')
     sj_vacancies_table = create_table(get_vacancies_stats_from_sj(superjob_auth), 'SuperJob Moscow')
-    print(hh_vacancies_table.table)
+    # print(hh_vacancies_table.table)
     print(sj_vacancies_table.table)
