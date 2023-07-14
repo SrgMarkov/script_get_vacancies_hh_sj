@@ -106,5 +106,7 @@ def create_table(vacancies, table_name):
 
 if __name__ == '__main__':
     load_dotenv()
-    print(create_table(get_vacancies_from_hh(), 'HH Moscow').table)
-    print(create_table(get_vacancies_from_sj(), 'SuperJob Moscow').table)
+    hh_vacancies_table = create_table(get_vacancies_from_hh(), 'HH Moscow')
+    sj_vacancies_table = create_table(get_vacancies_from_sj(), 'SuperJob Moscow')
+    print(hh_vacancies_table.table)
+    print(sj_vacancies_table.table)
