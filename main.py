@@ -6,6 +6,11 @@ from terminaltables import AsciiTable
 
 PROGRAM_LANGUAGES = ['JavaScript', 'Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'Swift', 'Go']
 TABLE_HEADING = ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата']
+LOCATION_FOR_HH = '1'
+LOCATION_FOR_SJ = 4
+VACANCY_PER_PAGE = 100
+START_PAGE = 0
+VACANCY_DATE_FROM = date.today() - timedelta(days=30)
 
 
 def predict_rub_salary_hh(hh_vacancy):
@@ -38,10 +43,10 @@ def get_vacancies_stats_from_hh():
     hh_vacancies_stats = {}
     for program_language in PROGRAM_LANGUAGES:
         params = {'text': program_language,
-                  'area': '1',
-                  'per_page': 100,
-                  'page': 0,
-                  'date_from': date.today() - timedelta(days=30)}
+                  'area': LOCATION_FOR_HH,
+                  'per_page': VACANCY_PER_PAGE,
+                  'page': START_PAGE,
+                  'date_from': VACANCY_DATE_FROM}
         vacancy_pages = None
         vacancy_with_salaries = 0
         vacancy_salaries_sum = 0
@@ -67,9 +72,9 @@ def get_vacancies_stats_from_sj(api_key):
     for program_language in PROGRAM_LANGUAGES:
         superjob_url = 'https://api.superjob.ru/2.0/vacancies/'
         superjob_params = {'keyword': program_language,
-                           'town': 4,
-                           'page': 0,
-                           'count': 100
+                           'town': LOCATION_FOR_SJ,
+                           'page': START_PAGE,
+                           'count': VACANCY_PER_PAGE
                            }
         vacancy_with_salaries = 0
         vacancy_salaries_sum = 0
