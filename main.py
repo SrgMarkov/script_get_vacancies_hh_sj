@@ -51,9 +51,9 @@ def get_vacancies_stats_from_hh():
         vacancy_with_salaries = 0
         vacancy_salaries_sum = 0
         while params['page'] != vacancy_pages:
-            vacancy = requests.get(hh_url, params=params)
-            vacancy.raise_for_status()
-            vacancy_response = vacancy.json()
+            hh_response = requests.get(hh_url, params=params)
+            hh_response.raise_for_status()
+            vacancy_response = hh_response.json()
             vacancy_pages = vacancy_response['pages']
             for vacancy in vacancy_response['items']:
                 vacancy_salary = predict_rub_salary_hh(vacancy)
